@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mythuitheme>
+
+<!-- ##################################
+
+  Wide Theme for MythSqueezeBox2 1920X1080
+
+     ##################################-->
+
+    <window name="MythSqueezeBox2">
+
+
+
+
+<textarea name="PlayerName">
+    <area>40,20,1840,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>center,vcenter</align>
+    <font>basemedium</font>
+    <value>PlayerName:</value>
+</textarea>
+
+
+<!-- ##################################
+    Background for SlimDisplay and Coverflow
+     ##################################-->
+
+
+<imagetype name="DisplayBackground">
+    <area>20,90,1880,620</area>
+    <gradient start="#999999" end="#333333" alpha="255" />
+</imagetype>
+
+
+<imagetype name="SqueezeDisplay">
+    <filename>msb_images/NoMusic.png</filename>
+    <area>40,100,1840,160</area>
+</imagetype>
+
+<!-- ##################################
+    Uses the PictureFlow class to display a coverflow-like list of the
+    album covers for the current playlist (kind of boring if you are
+    just playing an album).  This updates as the playlist is played out.
+     ##################################-->
+
+<imagetype name="PlaylistCoverFlow">
+    <filename>msb_images/NoMusic.png</filename>
+    <area>40,280,1840,420</area>
+</imagetype>
+
+<!-- ##################################
+    text about song attributes
+     ##################################-->
+
+<textarea name="SongTitle">
+    <area>40,720,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Title:</value>
+</textarea>
+
+<textarea name="SongAlbum">
+    <area>655,720,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Album:</value>
+</textarea>
+
+<textarea name="SongArtist">
+    <area>1270,720,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Artist:</value>
+</textarea>
+
+<textarea name="SongGenre">
+    <area>40,780,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Genre:</value>
+</textarea>
+
+<textarea name="SongYear">
+    <area>655,780,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Year:</value>
+</textarea>
+
+<textarea name="SongDuration">
+    <area>1270,780,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Duration:</value>
+</textarea>
+
+<!-- ##################################
+    Next Song
+     ##################################-->
+
+<textarea name="NextSong">
+    <area>40,840,1840,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Up Next:</value>
+</textarea>
+
+<!-- ##################################
+    Playing Mode
+     ##################################-->
+
+<textarea name="PlayMode">
+    <area>40,900,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Mode:</value>
+</textarea>
+
+<!-- ##################################
+    Shuffle Mode
+     ##################################-->
+
+<textarea name="ShuffleMode">
+    <area>655,900,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Shuffle:</value>
+</textarea>
+
+<!-- ##################################
+    Repeat Mode
+     ##################################-->
+
+<textarea name="RepeatMode">
+    <area>1270,900,600,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>left,vcenter</align>
+    <font>basemedium</font>
+    <value>Repeat:</value>
+</textarea>
+
+
+<!-- ##################################
+    End of definition of MythSqueezeBox2 Window
+     ##################################-->
+    </window>
+
+</mythuitheme>

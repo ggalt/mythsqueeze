@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mythuitheme>
+
+<!-- ##################################
+
+  Music selection Window for 4:3 (800x600) them
+
+     ##################################-->
+
+    <window name="MusicSelectWindow">
+    
+        <area>-1,-1,1136,486</area>
+<imagetype name="selectWin">
+
+    <filename>msb_images/selectWinBackground.png</filename>
+    <area>0,0,1136,486</area>
+</imagetype>
+
+<imagetype name="winbackground">
+    <filename>msb_images/NoMusic.png</filename>
+    <area>3,3,1130,480</area>
+</imagetype>
+
+
+
+<imagetype name="SelectCoverFlow">
+    <filename>msb_images/NoMusic.png</filename>
+    <area>3,43,1130,440</area>
+</imagetype>
+
+<textarea name="SelectionTitle">
+    <area>3,3,1130,40</area>
+    <cutdown>yes</cutdown>
+    <multiline>no</multiline>
+    <align>hcenter,vcenter</align>
+    <font>basemedium</font>
+</textarea>
+
+
+
+<!-- ##################################
+    End of definition of MusicSelectWindow
+     ##################################-->
+    </window>
+
+</mythuitheme>
