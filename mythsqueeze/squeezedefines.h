@@ -61,7 +61,7 @@ class SlimServerInfo;
 class SlimImageCache;
 class SlimDatabaseFetch;
 class SqueezePictureFlow;
-class SqueezeDisplay;
+class MythSqueezeDisplay;
 
 // Path to directories
 #define DATAPATH "/.qtsqueeze3/info/"

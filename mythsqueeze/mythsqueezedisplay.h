@@ -1,7 +1,12 @@
 #ifndef SQUEEZEDISPLAY_H
 #define SQUEEZEDISPLAY_H
 
-#include <QLabel>
+// MythTV headers
+#include <mythtv/verbosedefs.h>
+#include <mythtv/mythcontext.h>
+#include <mythtv/libmythui/mythuivideo.h>
+
+// Qt Headers
 #include <QFont>
 #include <QFontMetrics>
 #include <QRect>
@@ -14,11 +19,12 @@
 #include <QColor>
 #include <QTimer>
 #include <QResizeEvent>
+#include <QPixmap>
 
 #include "slimdevice.h"
 #include "squeezedefines.h"
 
-class SqueezeDisplay : public QObject
+class MythSqueezeDisplay : public QObject
 {
     Q_OBJECT
 
@@ -29,8 +35,8 @@ class SqueezeDisplay : public QObject
     Q_PROPERTY(int Brightness READ getBrightness WRITE setBrightness)
 
 public:
-    explicit SqueezeDisplay(QLabel *lbl, QObject *parent = 0);
-    ~SqueezeDisplay(void);
+    explicit MythSqueezeDisplay(MythUIVideo *squeezeDisplay, QObject *parent = 0);
+    ~MythSqueezeDisplay(void);
 
     void Init(QColor txtcolGen, QColor dispBgrdColor);
     void Init(void);
@@ -56,8 +62,11 @@ public:
 
     bool Slimp3Display( QString txt );
 
+    QPixmap &GetPic(void) {return pic;}
+
 signals:
     void ErrorMsg(QString err);
+    void PicUpdate(void);
 
 public slots:
     void PaintSqueezeDisplay(DisplayBuffer *buf);
@@ -73,8 +82,10 @@ private:
     void LoadTransitionBuffer(void);
 
     // for display of the slim device interface
-    QLabel *displayLabel;
+    MythUIVideo *m_squeezeDisplay;
+    QRect *displayLabel;
     QImage *displayImage;  // use a QImage not a QPixmap so we can use alpha blends
+    QPixmap pic;            // pixmap for use by MythUIVideo
     SlimDevice *activeDevice;   // reference to active device, must be set manually
     DisplayBuffer *d;       // pointer to display buffer received from main program
 

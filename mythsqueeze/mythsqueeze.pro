@@ -27,22 +27,26 @@ HEADERS += squeezedefines.h \
     slimimagecache2.h \
     slimdatabasefetch.h \
     squeezepictureflow.h \
-    pictureflow.h
+    pictureflow.h \
+    mythsqueezedisplay.h
 
 SOURCES += main.cpp \
     mythsqueeze.cpp \
     slimdevice.cpp \
     slimserverinfo.cpp \
-    squeezedisplay.cpp \
     squeezesettings.cpp \
     slimcli.cpp \
     slimimagecache2.cpp \
     squeezepictureflow.cpp \
     slimdatabasefetch.cpp \
-    pictureflow.cpp
+    pictureflow.cpp \
+    mythsqueezedisplay.cpp
 
 QT += network
 include ( ../../libs-targetfix.pro )
+
+
+
 
 
 

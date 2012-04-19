@@ -52,9 +52,9 @@ bool MythSqueeze::Create()
     // establish the interface
     bool err = false;
     UIUtilE::Assign( this, m_playerName, "PlayerName", &err );
-    UIUtilE::Assign( this, m_slimDisplay, "SqueezeDisplay", &err );
+    UIUtilE::Assign( this, m_squeezeDisplay, "SqueezeDisplay", &err );
 
-    m_disp = new SqueezeDisplay(ui->lblSlimDisplay, this);
+    m_disp = new MythSqueezeDisplay(ui->lblSlimDisplay, this);
     m_disp->Init();
 
     if( err ) {
@@ -822,20 +822,6 @@ void MythSqueeze::getPortAudioDevice( void )
         PortAudioDevice = "-o" + PortAudioDevice.trimmed();
         DEBUGF( "PortAudioDevice = " << PortAudioDevice );
     }
-}
-
-QString MythSqueeze::getImageStoragePath( void )
-{
-    QString path = GetConfDir();
-
-    QDir dir(path);
-    if (!dir.exists())
-        dir.mkdir(path);
-    path += "/MythSqueeze2";
-    dir.setPath(path);
-    if (!dir.exists())
-        dir.mkdir(path);
-    return path;
 }
 
 void MythSqueeze::slotDisablePlayer( void )

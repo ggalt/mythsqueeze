@@ -8,14 +8,10 @@
 #include <mythtv/mythdirs.h>
 #include <mythtv/libmythui/mythscreentype.h>
 #include <mythtv/libmythui/mythuitext.h>
-#include <mythtv/libmythui/mythuibuttonlist.h>
-#include <mythtv/libmythui/mythuibutton.h>
+#include <mythtv/libmythui/mythuivideo.h>
 #include <mythtv/libmythui/mythuiimage.h>
-#include <mythtv/libmythui/mythdialogbox.h>
-#include <mythtv/libmythui/mythprogressdialog.h>
 #include <mythtv/libmythui/mythfontproperties.h>
 #include <mythtv/libmythui/mythpainter.h>
-#include <mythtv/libmythui/mythimage.h>
 
 // Qt declarations
 #include <QtGui/QMainWindow>
@@ -148,12 +144,13 @@ private:
     QTime progstart;
 
     // for display of the slim device interface
-    SqueezeDisplay *m_disp;
+    MythSqueezeDisplay *m_disp;
 
     // mythtv interface elements
     MythUIText        *m_playerName;
-    MythUIImage       *m_slimDisplay;
+//    MythUIImage       *m_slimDisplay;
     MythScreenStack    *m_popupStack;
+    MythUIVideo *m_squeezeDisplay;
 
 
     QList<QByteArray> outDevs;

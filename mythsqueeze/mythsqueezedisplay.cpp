@@ -1,6 +1,6 @@
 #include <QtDebug>
 
-#include "squeezedisplay.h"
+#include "mythsqueezedisplay.h"
 
 #ifdef SQUEEZEDISPLAY_DEBUG
 #define DEBUGF(...) qDebug() << this->objectName() << Q_FUNC_INFO << __VA_ARGS__;
@@ -10,7 +10,7 @@
 #define HPADDING 2
 #define WPADDING 5
 
-SqueezeDisplay::SqueezeDisplay( QLabel *lbl, QObject *parent) :
+MythSqueezeDisplay::MythSqueezeDisplay( MythUIVideo *squeezeDisplay, QObject *parent) :
     QObject(parent)
 {
     setObjectName("SqueezeDisplay");
@@ -32,10 +32,11 @@ SqueezeDisplay::SqueezeDisplay( QLabel *lbl, QObject *parent) :
     line1Alpha = 0;
     line1fm=NULL;
     displayImage=NULL;
-    displayLabel=lbl;
+    m_squeezeDisplay = squeezeDisplay;
+    displayLabel=m_squeezeDisplay->GetArea().toQRect();
 }
 
-SqueezeDisplay::~SqueezeDisplay(void)
+MythSqueezeDisplay::~MythSqueezeDisplay(void)
 {
     if(line1fm!=NULL)
         delete line1fm;
@@ -49,14 +50,14 @@ SqueezeDisplay::~SqueezeDisplay(void)
         delete displayImage;
 }
 
-void SqueezeDisplay::Init(QColor txtcolGen, QColor dispBgrdColor)
+void MythSqueezeDisplay::Init(QColor txtcolGen, QColor dispBgrdColor)
 {
     textcolorLine1 = m_textcolorGeneral = txtcolGen;
     m_displayBackgroundColor = dispBgrdColor;
     Init();
 }
 
-void SqueezeDisplay::Init(void)
+void MythSqueezeDisplay::Init(void)
 {
     resetDimensions();
     connect( &scrollTimer, SIGNAL( timeout() ), this, SLOT(slotUpdateScrollOffset()) );
@@ -68,7 +69,7 @@ void SqueezeDisplay::Init(void)
     connect( bumpTransTimer, SIGNAL(finished()), this, SLOT(slotTransitionFinished()));
 }
 
-void SqueezeDisplay::resetDimensions(void)
+void MythSqueezeDisplay::resetDimensions(void)
 {
     /*  Display is divided into a small top line (line0) and a large bottom line (line1)
         If Line0 = A, Line1 = 3A, with the gap at the top of Line0 and the bottom of Line1
@@ -93,7 +94,7 @@ void SqueezeDisplay::resetDimensions(void)
     }
 
     DEBUGF("Display Rect: " << m_displayRect);
-    DEBUGF("Label Rect: " << displayLabel->rect());
+    DEBUGF("Label Rect: " << displayLabel);
 
     fullDisplayClipping = QRegion(m_displayRect);
 
@@ -158,7 +159,7 @@ void SqueezeDisplay::resetDimensions(void)
     DEBUGF("Display Image Dimensions" << displayImage->rect());
 }
 
-void SqueezeDisplay::slotResetSlimDisplay(void)
+void MythSqueezeDisplay::slotResetSlimDisplay(void)
 {
     DEBUGF("");
     scrollTimer.stop();
@@ -177,7 +178,7 @@ void SqueezeDisplay::slotResetSlimDisplay(void)
     PaintSqueezeDisplay(activeDevice->getDisplayBuffer());
 }
 
-void SqueezeDisplay::slotUpdateSlimDisplay( void )
+void MythSqueezeDisplay::slotUpdateSlimDisplay( void )
 {
     DEBUGF("");
     boundingRect = line1fm->boundingRect( line1Bounds, Qt::AlignLeft | Qt::AlignHCenter, activeDevice->getDisplayBuffer()->line1 );
@@ -202,7 +203,7 @@ void SqueezeDisplay::slotUpdateSlimDisplay( void )
     PaintSqueezeDisplay(activeDevice->getDisplayBuffer());
 }
 
-void SqueezeDisplay::LeftArrowEffect( void )
+void MythSqueezeDisplay::LeftArrowEffect( void )
 {
     StopScroll();
     isTransition = true;
@@ -216,7 +217,7 @@ void SqueezeDisplay::LeftArrowEffect( void )
     }
 }
 
-void SqueezeDisplay::RightArrowEffect( void )
+void MythSqueezeDisplay::RightArrowEffect( void )
 {
     StopScroll();
     isTransition = true;
@@ -225,7 +226,7 @@ void SqueezeDisplay::RightArrowEffect( void )
     horzTransTimer->start();
 }
 
-void SqueezeDisplay::UpArrowEffect( void )
+void MythSqueezeDisplay::UpArrowEffect( void )
 {
     StopScroll();
     isTransition = true;
@@ -234,7 +235,7 @@ void SqueezeDisplay::UpArrowEffect( void )
     vertTransTimer->start();
 }
 
-void SqueezeDisplay::DownArrowEffect( void )
+void MythSqueezeDisplay::DownArrowEffect( void )
 {
     StopScroll();
     isTransition = true;
@@ -243,7 +244,7 @@ void SqueezeDisplay::DownArrowEffect( void )
     vertTransTimer->start();
 }
 
-void SqueezeDisplay::StopScroll( void )
+void MythSqueezeDisplay::StopScroll( void )
 {
     scrollTimer.stop();
     ScrollOffset = 0;
@@ -251,7 +252,7 @@ void SqueezeDisplay::StopScroll( void )
     scrollState = PAUSE_SCROLL;
 }
 
-void SqueezeDisplay::slotUpdateScrollOffset(void)
+void MythSqueezeDisplay::slotUpdateScrollOffset(void)
 {
     if( scrollState == PAUSE_SCROLL ) {
         scrollTimer.stop();
@@ -293,7 +294,7 @@ void SqueezeDisplay::slotUpdateScrollOffset(void)
     PaintSqueezeDisplay(activeDevice->getDisplayBuffer());
 }
 
-void SqueezeDisplay::slotUpdateTransition(int frame)
+void MythSqueezeDisplay::slotUpdateTransition(int frame)
 {
     switch( transitionDirection ) {
     case transLEFT:
@@ -325,7 +326,7 @@ void SqueezeDisplay::slotUpdateTransition(int frame)
     PaintSqueezeDisplay(activeDevice->getDisplayBuffer());
 }
 
-void SqueezeDisplay::slotTransitionFinished(void)
+void MythSqueezeDisplay::slotTransitionFinished(void)
 {
     vertTransTimer->stop();
     horzTransTimer->stop();
@@ -337,7 +338,7 @@ void SqueezeDisplay::slotTransitionFinished(void)
     slotResetSlimDisplay();
 }
 
-void SqueezeDisplay::LoadTransitionBuffer(void)
+void MythSqueezeDisplay::LoadTransitionBuffer(void)
 {
     DisplayBuffer *temp = activeDevice->getDisplayBuffer();
     transBuffer.center0 = temp->center0;
@@ -349,7 +350,7 @@ void SqueezeDisplay::LoadTransitionBuffer(void)
     transBuffer.overlay1 = temp->overlay1;
 }
 
-bool SqueezeDisplay::Slimp3Display( QString txt )
+bool MythSqueezeDisplay::Slimp3Display( QString txt )
 {
     QRegExp rx( "\037" );      // the CLI overlay for the Slimp3 display uses 0x1F (037 octal) to delimit the segments of the counter
     if( rx.indexIn( txt ) != -1 ) {
@@ -362,7 +363,7 @@ bool SqueezeDisplay::Slimp3Display( QString txt )
     }
 }
 
-void SqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
+void MythSqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
 {
     int playedCount = 0;
     int totalCount = 1; // this way we never get a divide by zero error
@@ -530,7 +531,7 @@ void SqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
             QPoint start = QPoint( center1Bounds.x() + (center1Bounds.width()/2)- ( fm.width( buf->center1 )/2 ), center1Bounds.bottom() );
             p.drawText( start, buf->center1 );
         }
-    displayLabel->setPixmap(QPixmap::fromImage( *displayImage) );
-
+//    displayLabel->setPixmap(QPixmap::fromImage( *displayImage) );
+        m_squeezeDisplay->UpdateFrame(QPixmap::fromImage(*displayImage));
 }
 
