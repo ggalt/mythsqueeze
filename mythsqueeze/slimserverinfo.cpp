@@ -24,7 +24,6 @@ SlimServerInfo::SlimServerInfo(QObject *parent) :
 SlimServerInfo::~SlimServerInfo()
 {
     DEBUGF("");
-    WriteDataFile();
 }
 
 bool SlimServerInfo::Init(SlimCLI *cliRef)
@@ -47,12 +46,6 @@ bool SlimServerInfo::Init(SlimCLI *cliRef)
         return false;
     }
 
-    DEBUGF("READ DATAFILE");
-    if( !ReadDataFile() )
-        refreshImageFromServer();
-    else
-        checkRefreshDate();     // see if we need to update the database
-    DEBUGF("RETURNING");
     return true;
 }
 

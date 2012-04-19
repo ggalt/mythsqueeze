@@ -46,6 +46,7 @@
 #include "squeezedefines.h"
 #include "slimcli.h"
 #include "slimdevice.h"
+#include "mythsqueezedisplay.h"
 
 
 /** \class MythSqueeze
