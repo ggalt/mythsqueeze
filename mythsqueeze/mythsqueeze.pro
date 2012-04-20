@@ -42,7 +42,7 @@ SOURCES += main.cpp \
     pictureflow.cpp \
     mythsqueezedisplay.cpp
 
-QT += network
+QT += network sql xml
 include ( ../../libs-targetfix.pro )
 
 
