@@ -24,10 +24,6 @@ HEADERS += squeezedefines.h \
     squeezedisplay.h \
     squeezesettings.h \
     slimcli.h \
-    slimimagecache2.h \
-    slimdatabasefetch.h \
-    squeezepictureflow.h \
-    pictureflow.h \
     mythsqueezedisplay.h
 
 SOURCES += main.cpp \
@@ -36,10 +32,6 @@ SOURCES += main.cpp \
     slimserverinfo.cpp \
     squeezesettings.cpp \
     slimcli.cpp \
-    slimimagecache2.cpp \
-    squeezepictureflow.cpp \
-    slimdatabasefetch.cpp \
-    pictureflow.cpp \
     mythsqueezedisplay.cpp
 
 QT += network sql xml

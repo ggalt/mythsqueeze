@@ -46,6 +46,7 @@
 #include "squeezedefines.h"
 #include "slimcli.h"
 #include "slimdevice.h"
+#include "slimserverinfo.h"
 #include "mythsqueezedisplay.h"
 
 
@@ -62,7 +63,6 @@ public:
     ~MythSqueeze();
 
     bool Create(void);
-    void InitPlayer( void );
     bool keyPressEvent(QKeyEvent *e);
     void customEvent(QEvent*);
 
@@ -70,31 +70,10 @@ public slots:
     void SqueezePlayerError( void );
     void SqueezePlayerOutput( void );
 
-    void slotUpdateplaylistCoverFlow( int trackIndex );
-    void slotCreateplaylistCoverFlow( void );
-    void slotplaylistCoverFlowReady(void);
-
-    void SetupSelectionCoverFlows(void);
-    void ArtistAlbumCoverFlowSelect(void);
-    void AlbumCoverFlowSelect(void);
-    void ResetKeypadTimer(void);
-    void ChangeCoverflowDisplay(void);
-//    void ChangeToAlbumSelection(int tab);
-
     void slotDisablePlayer( void );
     void slotEnablePlayer( void );
     void slotSetActivePlayer( void );
     void slotSetActivePlayer( SlimDevice *d );
-
-    void saveDisplayConfig(void);
-    void saveConnectionConfig(void);
-    void loadConfig(void);
-    void setConfigDisplay2Defaults(void);
-    void setConfigConnection2Defaults(void);
-
-    void setCoverFlowColor(void);
-    void setDisplayBackgroundColor(void);
-    void setDisplayTextColor(void);
 
     // button commands from Default.map file
     void slotRewind( void ) { activeDevice->SendDeviceCommand( QString( "button rew.single\n" ) ); }
@@ -142,6 +121,7 @@ private:
     QProcess *squeezePlayer;
     SlimCLI *slimCLI;
     SlimDevice *activeDevice;
+    SlimServerInfo *serverInfo;
     QTime progstart;
 
     // for display of the slim device interface

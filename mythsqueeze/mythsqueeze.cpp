@@ -11,6 +11,8 @@ MythSqueeze::MythSqueeze(MythScreenStack *parent, const char *name)
     // want to have this created here so we can set the SlimServer IP and MAC addresses before we init()
     squeezePlayer = new QProcess( this );
     slimCLI = new SlimCLI( this );
+    serverInfo = new SlimServerInfo(this);
+
     activeDevice = NULL;
     PortAudioDevice = "";
     isStartUp = true;
@@ -60,11 +62,7 @@ bool MythSqueeze::Create()
     }
 
     BuildFocusList();
-    return true;
-}
 
-void MythSqueeze::InitPlayer( void )
-{
     connect( squeezePlayer, SIGNAL(readyReadStandardError()), this, SLOT(SqueezePlayerError()) );
     connect( squeezePlayer, SIGNAL(readyReadStandardOutput()), this, SLOT(SqueezePlayerOutput()) );
 
@@ -116,6 +114,8 @@ void MythSqueeze::InitPlayer( void )
     slimCLI->SetCliUsername( QString( gContext->GetSetting( "SqueezeCenterCliUsername" ) ) );
     slimCLI->SetCliPassword( QString( gContext->GetSetting("SqueezeCenterCliPassword") ) );
 
+    connect( serverInfo, SIGNAL(FinishedInitializingDevices()),
+             this, SLOT(slotSetActivePlayer()) );              // we want to wait to set up the display until the devices are established
     connect( slimCLI, SIGNAL(cliError(QString)),
              this, SLOT(slotSystemErrorMsg(QString)) );
     connect( slimCLI, SIGNAL(cliInfo(QString)),
@@ -123,14 +123,8 @@ void MythSqueeze::InitPlayer( void )
 
     m_disp->Init(); // set up display
 
+    slimCLI->SetServerInfo(serverInfo);                         // give pointer so CLI can get server info and put into SlimServerInfo
     slimCLI->Init();
-
-    connect( slimCLI->GetData(), SIGNAL(GotMusicData()),
-             this, SLOT(slotDatabaseReady()));
-    connect( slimCLI->GetData(), SIGNAL(GotImages()),
-             this, SLOT(slotImagesReady()));
-
-    // set up connection between interface buttons and the slimserver
 }
 
 void MythSqueeze::SendPlayerMessage( QString msg, QString duration, bool includeTime )
@@ -151,37 +145,37 @@ void MythSqueeze::SendPlayerMessage( QString msg, QString duration, bool include
 void MythSqueeze::slotEscape( void )
 {
     DEBUGF( "ESCAPING");
-//    m_disp->
-//    DisplayBuffer d;
-//    d.line0 = "Exiting MythSqueeze at " + QDateTime::currentDateTime().toString();
-//    d.line1 = "Goodbye";
-//    isTransition = false;
+    //    m_disp->
+    //    DisplayBuffer d;
+    //    d.line0 = "Exiting MythSqueeze at " + QDateTime::currentDateTime().toString();
+    //    d.line1 = "Goodbye";
+    //    isTransition = false;
 }
 
 void MythSqueeze::slotPlay( void )
 {
     DEBUGF("");
-        activeDevice->SendDeviceCommand( QString( "button play.single\n" ) );
+    activeDevice->SendDeviceCommand( QString( "button play.single\n" ) );
 }
 
 void MythSqueeze::slotAdd( void )
 {
     DEBUGF("");
-        activeDevice->SendDeviceCommand( QString( "button add.single\n" ) );
+    activeDevice->SendDeviceCommand( QString( "button add.single\n" ) );
 }
 
 void MythSqueeze::slotLeftArrow( void )
 {
     DEBUGF("");
-        m_disp->LeftArrowEffect();
-        activeDevice->SendDeviceCommand( QString( "button arrow_left\n" ) );
+    m_disp->LeftArrowEffect();
+    activeDevice->SendDeviceCommand( QString( "button arrow_left\n" ) );
 }
 
 void MythSqueeze::slotRightArrow( void )
 {
     DEBUGF("");
-        m_disp->RightArrowEffect();
-        activeDevice->SendDeviceCommand( QString( "button arrow_right\n" ) );
+    m_disp->RightArrowEffect();
+    activeDevice->SendDeviceCommand( QString( "button arrow_right\n" ) );
 }
 
 void MythSqueeze::slotUpArrow( void )
@@ -264,8 +258,8 @@ void MythSqueeze::getplayerMACAddress( void )
     while( i.hasNext() ) {  // note: this grabs the first functional, non-loopback address there is.  It may not the be interface on which you really connect to the slimserver
         t = i.next();
         if( !t.flags().testFlag( QNetworkInterface::IsLoopBack ) &&
-            t.flags().testFlag( QNetworkInterface::IsUp ) &&
-            t.flags().testFlag( QNetworkInterface::IsRunning ) ) {
+                t.flags().testFlag( QNetworkInterface::IsUp ) &&
+                t.flags().testFlag( QNetworkInterface::IsRunning ) ) {
             MacAddress = t.hardwareAddress().toAscii().toLower();
             return;
         }

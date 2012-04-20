@@ -172,135 +172,135 @@ bool SlimServerInfo::ProcessServerInfo(QByteArray response)
 
 }
 
-QList<Album> SlimServerInfo::GetArtistAlbumList(QString artist)
-{
-    QList<Album> albumListTemp;
-    QStringListIterator strIt(m_Artist2AlbumIds.value(artist));
-    while(strIt.hasNext()){
-        albumListTemp.append(m_AlbumID2AlbumInfo.value(strIt.next()));
-    }
-    return albumListTemp;
-}
+//QList<Album> SlimServerInfo::GetArtistAlbumList(QString artist)
+//{
+//    QList<Album> albumListTemp;
+//    QStringListIterator strIt(m_Artist2AlbumIds.value(artist));
+//    while(strIt.hasNext()){
+//        albumListTemp.append(m_AlbumID2AlbumInfo.value(strIt.next()));
+//    }
+//    return albumListTemp;
+//}
 
-bool SlimServerInfo::ReadDataFile( void )
-{
-    DEBUGF("");
-    QString dataPath = QDir::homePath()+DATAPATH;
-    QDir d(dataPath);
-    if(!d.exists())
-        d.mkpath(dataPath);
-    QDir::setCurrent(dataPath);
+//bool SlimServerInfo::ReadDataFile( void )
+//{
+//    DEBUGF("");
+//    QString dataPath = QDir::homePath()+DATAPATH;
+//    QDir d(dataPath);
+//    if(!d.exists())
+//        d.mkpath(dataPath);
+//    QDir::setCurrent(dataPath);
 
-    QFile file;
-    if( file.exists(DATAFILE) ) // there is a file, so read from it
-        file.setFileName(DATAFILE);
-    else {
-        DEBUGF("no file to read at " << dataPath+DATAFILE);
-        return false;
-    }
+//    QFile file;
+//    if( file.exists(DATAFILE) ) // there is a file, so read from it
+//        file.setFileName(DATAFILE);
+//    else {
+//        DEBUGF("no file to read at " << dataPath+DATAFILE);
+//        return false;
+//    }
 
-    quint16 albumCount;
+//    quint16 albumCount;
 
-    //update the images
-    file.open(QIODevice::ReadOnly);
-    QDataStream in(&file);   // read the data serialized from the file
+//    //update the images
+//    file.open(QIODevice::ReadOnly);
+//    QDataStream in(&file);   // read the data serialized from the file
 
-    // check version of data
-    qint16 versionNo;
-    in >> versionNo;
-    qDebug() << versionNo << DATAVERSION;
-    if(versionNo != (qint16)DATAVERSION)
-        return false;
+//    // check version of data
+//    qint16 versionNo;
+//    in >> versionNo;
+//    qDebug() << versionNo << DATAVERSION;
+//    if(versionNo != (qint16)DATAVERSION)
+//        return false;
 
 
-    in >> freshnessDate;
-    in >> m_Artist2AlbumIds;
-    in >> m_AlbumArtist2AlbumID;
-    in >> albumCount;
-    in >> m_albumList;
-    in >> m_AlbumID2AlbumInfo;
-    in >> m_artistList;
+//    in >> freshnessDate;
+//    in >> m_Artist2AlbumIds;
+//    in >> m_AlbumArtist2AlbumID;
+//    in >> albumCount;
+//    in >> m_albumList;
+//    in >> m_AlbumID2AlbumInfo;
+//    in >> m_artistList;
 
-    DEBUGF("reading in info on " << albumCount << " files");
+//    DEBUGF("reading in info on " << albumCount << " files");
 
-#ifdef SLIMSERVERINFO_DEBUG
-    QListIterator<Artist> art(m_artistList);
-    while(art.hasNext()) {
-        Artist a = art.next();
-        qDebug() << a.id << a.name << a.textKey;
-    }
+//#ifdef SLIMSERVERINFO_DEBUG
+//    QListIterator<Artist> art(m_artistList);
+//    while(art.hasNext()) {
+//        Artist a = art.next();
+//        qDebug() << a.id << a.name << a.textKey;
+//    }
 
-    QListIterator<Album> al(m_albumList);
-    while(al.hasNext()) {
-        Album a = al.next();
-        qDebug() << a.albumTextKey << a.albumtitle << a.artist;
-    }
-#endif
+//    QListIterator<Album> al(m_albumList);
+//    while(al.hasNext()) {
+//        Album a = al.next();
+//        qDebug() << a.albumTextKey << a.albumtitle << a.artist;
+//    }
+//#endif
 
-    DEBUGF( "Reading file of size: " << file.size() );
-    file.close();
-    return true;
-}
+//    DEBUGF( "Reading file of size: " << file.size() );
+//    file.close();
+//    return true;
+//}
 
-void SlimServerInfo::WriteDataFile( void )
-{
-    DEBUGF("");
-    QString dataPath = QDir::homePath()+DATAPATH;
-    QDir d(dataPath);
-    if(!d.exists())
-        d.mkpath(dataPath);
-    QDir::setCurrent(dataPath);
+//void SlimServerInfo::WriteDataFile( void )
+//{
+//    DEBUGF("");
+//    QString dataPath = QDir::homePath()+DATAPATH;
+//    QDir d(dataPath);
+//    if(!d.exists())
+//        d.mkpath(dataPath);
+//    QDir::setCurrent(dataPath);
 
-    QFile file;
-    file.setFileName(DATAFILE);
+//    QFile file;
+//    file.setFileName(DATAFILE);
 
-    //update the information
-    if(!file.open(QIODevice::WriteOnly)) {
-        DEBUGF("Error opening file for writing");
-        return;
-    }
-    QDataStream out(&file);   // read the data serialized from the file
-    out << (qint16)DATAVERSION; // set data verion number
+//    //update the information
+//    if(!file.open(QIODevice::WriteOnly)) {
+//        DEBUGF("Error opening file for writing");
+//        return;
+//    }
+//    QDataStream out(&file);   // read the data serialized from the file
+//    out << (qint16)DATAVERSION; // set data verion number
 
-    out << lastServerRefresh;
-    out << m_Artist2AlbumIds;
-    out << m_AlbumArtist2AlbumID;
-    out << (qint16)m_AlbumID2AlbumInfo.count();
-    out << m_albumList;
-    out << m_AlbumID2AlbumInfo;
-    out << m_artistList;
+//    out << lastServerRefresh;
+//    out << m_Artist2AlbumIds;
+//    out << m_AlbumArtist2AlbumID;
+//    out << (qint16)m_AlbumID2AlbumInfo.count();
+//    out << m_albumList;
+//    out << m_AlbumID2AlbumInfo;
+//    out << m_artistList;
 
-    DEBUGF( "Writing file of size: " << file.size() );
-    file.close();
-    return;
-}
+//    DEBUGF( "Writing file of size: " << file.size() );
+//    file.close();
+//    return;
+//}
 
-void SlimServerInfo::checkRefreshDate(void)
-{
-    DEBUGF("");
-    if(lastServerRefresh!=freshnessDate)
-        refreshImageFromServer();
-}
+//void SlimServerInfo::checkRefreshDate(void)
+//{
+//    DEBUGF("");
+//    if(lastServerRefresh!=freshnessDate)
+//        refreshImageFromServer();
+//}
 
-void SlimServerInfo::refreshImageFromServer(void)
-{
-    DEBUGF("");
-    db = new SlimDatabaseFetch();
-    connect(db,SIGNAL(FinishedUpdatingDatabase()),
-            this,SLOT(DatabaseUpdated()));
+//void SlimServerInfo::refreshImageFromServer(void)
+//{
+//    DEBUGF("");
+//    db = new SlimDatabaseFetch();
+//    connect(db,SIGNAL(FinishedUpdatingDatabase()),
+//            this,SLOT(DatabaseUpdated()));
 
-    db->Init(SlimServerAddr,cliPort,cli->GetCliUsername(),cli->GetCliPassword());
-    db->start();    // init database fetching thread
-}
+//    db->Init(SlimServerAddr,cliPort,cli->GetCliUsername(),cli->GetCliPassword());
+//    db->start();    // init database fetching thread
+//}
 
-void SlimServerInfo::DatabaseUpdated(void)
-{
-    DEBUGF("");
-    m_AlbumArtist2AlbumID = db->AlbumArtist2AlbumID();
-    m_AlbumID2AlbumInfo = db->AlbumID2AlbumInfo();
-    m_Artist2AlbumIds = db->Artist2AlbumIds();
-    m_albumList = db->GetAllAlbumList();
-    m_artistList = db->GetAllArtistList();
-    db->exit();
-    db->deleteLater();
-}
+//void SlimServerInfo::DatabaseUpdated(void)
+//{
+//    DEBUGF("");
+//    m_AlbumArtist2AlbumID = db->AlbumArtist2AlbumID();
+//    m_AlbumID2AlbumInfo = db->AlbumID2AlbumInfo();
+//    m_Artist2AlbumIds = db->Artist2AlbumIds();
+//    m_albumList = db->GetAllAlbumList();
+//    m_artistList = db->GetAllArtistList();
+//    db->exit();
+//    db->deleteLater();
+//}
