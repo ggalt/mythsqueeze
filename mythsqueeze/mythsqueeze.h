@@ -65,7 +65,6 @@ public:
     bool Create(void);
     void InitPlayer(void);
     bool keyPressEvent(QKeyEvent *e);
-    void customEvent(QEvent*);
 
 public slots:
     void SqueezePlayerError( void );
@@ -78,7 +77,7 @@ public slots:
 
     void SendPlayerMessage( QString msg, QString duration, bool includeTime );
     void slotSystemInfoMsg( QString msg );
-    void slotSystemErrorMsg( QString err );
+//    void slotSystemErrorMsg( int errno, QString err );
 
     // button commands from Default.map file
     void slotRewind( void ) { activeDevice->SendDeviceCommand( QString( "button rew.single\n" ) ); }

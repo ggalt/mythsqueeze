@@ -72,6 +72,7 @@ static HostComboBox *PortAudioOutputDevice()
     gc->setLabel(QObject::tr("Select Portaudio Device for output"));
     gc->addSelection("##DEFAULT AUDIO DEVICE##");       // dummy device for taking the default audio output
     QListIterator<QByteArray> i(outDevs);
+    i.next();   // skip the first line, which is garbage
     while(i.hasNext()) {
         gc->addSelection(QString(i.next()));
     }

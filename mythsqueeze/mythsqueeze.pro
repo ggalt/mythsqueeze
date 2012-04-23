@@ -21,7 +21,6 @@ HEADERS += squeezedefines.h \
     mythsqueeze.h \
     slimdevice.h \
     slimserverinfo.h \
-    squeezedisplay.h \
     squeezesettings.h \
     slimcli.h \
     mythsqueezedisplay.h

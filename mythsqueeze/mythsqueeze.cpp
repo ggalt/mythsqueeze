@@ -56,7 +56,7 @@ bool MythSqueeze::Create()
 
     // establish the interface
     bool err = false;
-    UIUtilE::Assign( this, m_playerName, "PlayerName", &err );
+//    UIUtilE::Assign( this, m_playerName, "PlayerName", &err );
     UIUtilE::Assign( this, m_squeezeDisplay, "SqueezeDisplay", &err );
 
     m_disp = new MythSqueezeDisplay(m_squeezeDisplay, this);
@@ -128,8 +128,8 @@ void MythSqueeze::InitPlayer(void)
 
     connect( serverInfo, SIGNAL(FinishedInitializingDevices()),
              this, SLOT(slotSetActivePlayer()) );              // we want to wait to set up the display until the devices are established
-    connect( slimCLI, SIGNAL(cliError(QString)),
-             this, SLOT(slotSystemErrorMsg(QString)) );
+//    connect( slimCLI, SIGNAL(cliError(int, QString)),
+//             this, SLOT(slotSystemErrorMsg(int, QString)) );
     connect( slimCLI, SIGNAL(cliInfo(QString)),
              this, SLOT(slotSystemInfoMsg(QString)) );
 
@@ -264,7 +264,10 @@ void MythSqueeze::getSqueezeCenterAddress( void )
 void MythSqueeze::getPortAudioDevice( void )
 {
     PortAudioDevice = QString( gCoreContext->GetSetting("PortAudioOutputDevice")).trimmed();
-    if( PortAudioDevice != "" ) {
+    if( PortAudioDevice == "##DEFAULT AUDIO DEVICE##")
+        PortAudioDevice = "";
+
+    if( PortAudioDevice != ""  ) {
         PortAudioDevice = "-o" + PortAudioDevice.trimmed();
         DEBUGF( "PortAudioDevice = " << PortAudioDevice );
     }
@@ -297,11 +300,11 @@ void MythSqueeze::slotSystemInfoMsg( QString msg )
     DEBUGF( msg );
 }
 
-void MythSqueeze::slotSystemErrorMsg( QString err )
-{
-    DEBUGF( err );
-    Close();    // exit program
-}
+//void MythSqueeze::slotSystemErrorMsg( int errno, QString err )
+//{
+//    DEBUGF( err );
+//    Close();    // exit program
+//}
 
 bool MythSqueeze::keyPressEvent(QKeyEvent *event)
 {
