@@ -1,5 +1,10 @@
 #include "mythsqueeze.h"
 
+#ifdef SQUEEZEMAINWINDOW_DEBUG
+#define DEBUGF(...) qDebug() << this->objectName() << Q_FUNC_INFO << __VA_ARGS__;
+#else
+#define DEBUGF(...)
+#endif
 
 /**
  *  \param parent Pointer to the screen stack
@@ -20,14 +25,14 @@ MythSqueeze::MythSqueeze(MythScreenStack *parent, const char *name)
     activeDevice = NULL;
     isStartUp = true;
 
-    connect( slimCLI, SIGNAL(cliInfo(QString)), waitWindow, SLOT(showMessage(QString)) );
+    //    connect( slimCLI, SIGNAL(cliInfo(QString)), waitWindow, SLOT(showMessage(QString)) );
 
     m_popupStack = GetMythMainWindow()->GetStack("popup stack");
 }
 
 MythSqueeze::~MythSqueeze()
 {
-    VERBOSE( VB_GENERAL, LOC + "Exiting MythSqueeze Plugin at " + QDateTime::currentDateTime().toString() );
+    DEBUGF( "Exiting MythSqueeze Plugin at " + QDateTime::currentDateTime().toString() );
     squeezePlayer->close();
 }
 
@@ -38,14 +43,14 @@ bool MythSqueeze::Create()
     getplayerMACAddress();
     getPortAudioDevice();
 
-    VERBOSE( VB_GENERAL, "CREATING MythSqueeze2 WINDOW");
+    DEBUGF("CREATING MythSqueeze2 WINDOW");
     bool foundtheme = false;
 
     // Load the theme for this screen
     foundtheme = LoadWindowFromXML("MythSqueeze-ui.xml", "MythSqueeze", this);
 
     if (!foundtheme) {
-        VERBOSE( VB_IMPORTANT, "no theme" );
+        DEBUGF("no theme" );
         return false;
     }
 
@@ -57,7 +62,7 @@ bool MythSqueeze::Create()
     m_disp = new MythSqueezeDisplay(m_squeezeDisplay, this);
 
     if( err ) {
-        VERBOSE( VB_IMPORTANT, LOC_ERR + "Cannot load screen 'MythSqueeze2'");
+        DEBUGF("Cannot load screen 'MythSqueeze2'");
         return false;
     }
 
@@ -65,6 +70,13 @@ bool MythSqueeze::Create()
 
     connect( squeezePlayer, SIGNAL(readyReadStandardError()), this, SLOT(SqueezePlayerError()) );
     connect( squeezePlayer, SIGNAL(readyReadStandardOutput()), this, SLOT(SqueezePlayerOutput()) );
+}
+
+// we split "create" from "init" because that way the user sees the screen created and knows to wait while the rest
+// of the player is implemented.  No other reason.
+
+void MythSqueeze::InitPlayer(void)
+{
 
     // SETUP SQUEEZESLAVE PROCESS
 
@@ -110,9 +122,9 @@ bool MythSqueeze::Create()
     // initialize the CLI interface.  Make sure that you've set the appropriate server address and port
     slimCLI->SetMACAddress( QString( MacAddress ) );
     slimCLI->SetSlimServerAddress( SlimServerAddr );
-    slimCLI->SetCliPort( QString( gContext->GetSetting( "SqueezeCenterCliPort" ) ) );
-    slimCLI->SetCliUsername( QString( gContext->GetSetting( "SqueezeCenterCliUsername" ) ) );
-    slimCLI->SetCliPassword( QString( gContext->GetSetting("SqueezeCenterCliPassword") ) );
+    slimCLI->SetCliPort( QString( gCoreContext->GetSetting( "SqueezeCenterCliPort" ) ) );
+    slimCLI->SetCliUsername( QString( gCoreContext->GetSetting( "SqueezeCenterCliUsername" ) ) );
+    slimCLI->SetCliPassword( QString( gCoreContext->GetSetting("SqueezeCenterCliPassword") ) );
 
     connect( serverInfo, SIGNAL(FinishedInitializingDevices()),
              this, SLOT(slotSetActivePlayer()) );              // we want to wait to set up the display until the devices are established
@@ -145,11 +157,10 @@ void MythSqueeze::SendPlayerMessage( QString msg, QString duration, bool include
 void MythSqueeze::slotEscape( void )
 {
     DEBUGF( "ESCAPING");
-    //    m_disp->
-    //    DisplayBuffer d;
-    //    d.line0 = "Exiting MythSqueeze at " + QDateTime::currentDateTime().toString();
-    //    d.line1 = "Goodbye";
-    //    isTransition = false;
+    DisplayBuffer d;
+    d.line0 = "Exiting MythSqueeze at " + QDateTime::currentDateTime().toString();
+    d.line1 = "Goodbye";
+    m_disp->PaintSqueezeDisplay(&d);
 }
 
 void MythSqueeze::slotPlay( void )
@@ -195,7 +206,7 @@ void MythSqueeze::slotDownArrow( void )
 void MythSqueeze::slotSetActivePlayer( void )    // convenience function to set the active player as the player with the same MAC as this computer
 {
     DEBUGF( "Setting Active Player as the local machine");
-    slotSetActivePlayer( MacAddress.toPercentEncoding().toLower());
+    slotSetActivePlayer( serverInfo->GetDeviceFromMac( MacAddress.toPercentEncoding().toLower() ) );
     DEBUGF( "ENABLING PLAYER");
     slotEnablePlayer();
     DEBUGF( "PLAYER ENABLED");
@@ -203,33 +214,18 @@ void MythSqueeze::slotSetActivePlayer( void )    // convenience function to set 
 
 void MythSqueeze::slotSetActivePlayer( SlimDevice *d )
 {
-    if( activeDevice != NULL ) {    // first, disconnect current player, but only if there is a current player
-        disconnect( activeDevice, SIGNAL(NewSong()),
-                    this, SLOT(slotResetSlimDisplay()) );
-        disconnect( activeDevice, SIGNAL(ModeChange(QString)),
-                    this, SLOT(slotDeviceModeChange(QString)));
-        disconnect( activeDevice, SIGNAL(Mute(bool)),
-                    this, SLOT(slotDeviceMuteStatus(bool)));
-        disconnect( activeDevice, SIGNAL(RepeatStatusChange(QString)),
-                    this, SLOT(slotDeviceRepeatStatus(QString)));
-        disconnect( activeDevice, SIGNAL(ShuffleStatusChange(QString)),
-                    this, SLOT(slotDeviceShuffleStatus(QString)));
-        disconnect( activeDevice, SIGNAL(SlimDisplayUpdate()),
-                    this, SLOT(slotUpdateSlimDisplay()) );
-        disconnect( activeDevice, SIGNAL(CoverFlowUpdate( int )),
-                    this, SLOT(slotUpdateCoverFlow(int)) );
-        disconnect( activeDevice, SIGNAL(CoverFlowCreate()),
-                    this, SLOT(slotCreateCoverFlow()) );
-    }
     QString logMsg = "Changing Active Player to player with Mac address of : " + d->getDeviceMAC() + " with name of :" + d->getDeviceName();
     DEBUGF( logMsg );
-    VERBOSE( VB_GENERAL, LOC + logMsg );
-    slimCLI->GetData()->SetCurrentDevice( d );
+    serverInfo->SetCurrentDevice( d );
+    m_disp->SetActiveDevice(d);
+    m_disp->slotUpdateSlimDisplay();
     activeDevice = d;
-    slotResetSlimDisplay();
-    slotCreateCoverFlow();
+
     connect( activeDevice, SIGNAL(NewSong()),
-             this, SLOT(slotResetSlimDisplay()) );
+             m_disp, SLOT(slotResetSlimDisplay()) );
+    connect( activeDevice, SIGNAL(SlimDisplayUpdate()),
+             m_disp, SLOT(slotUpdateSlimDisplay()) );
+
     connect( activeDevice, SIGNAL(ModeChange(QString)),
              this, SLOT(slotDeviceModeChange(QString)));
     connect( activeDevice, SIGNAL(Mute(bool)),
@@ -238,12 +234,6 @@ void MythSqueeze::slotSetActivePlayer( SlimDevice *d )
              this, SLOT(slotDeviceRepeatStatus(QString)));
     connect( activeDevice, SIGNAL(ShuffleStatusChange(QString)),
              this, SLOT(slotDeviceShuffleStatus(QString)));
-    connect( activeDevice, SIGNAL(SlimDisplayUpdate()),
-             this, SLOT(slotUpdateSlimDisplay()) );
-    connect( activeDevice, SIGNAL(CoverFlowUpdate( int )),
-             this, SLOT(slotUpdateCoverFlow(int)) );
-    connect( activeDevice, SIGNAL(CoverFlowCreate()),
-             this, SLOT(slotCreateCoverFlow()) );
 }
 
 void MythSqueeze::getplayerMACAddress( void )
@@ -268,12 +258,12 @@ void MythSqueeze::getplayerMACAddress( void )
 
 void MythSqueeze::getSqueezeCenterAddress( void )
 {
-    SlimServerAddr = QString( gContext->GetSetting("SqueezeCenterIP") );
+    SlimServerAddr = QString( gCoreContext->GetSetting("SqueezeCenterIP") );
 }
 
 void MythSqueeze::getPortAudioDevice( void )
 {
-    PortAudioDevice = QString( gContext->GetSetting("PortAudioOutputDevice")).trimmed();
+    PortAudioDevice = QString( gCoreContext->GetSetting("PortAudioOutputDevice")).trimmed();
     if( PortAudioDevice != "" ) {
         PortAudioDevice = "-o" + PortAudioDevice.trimmed();
         DEBUGF( "PortAudioDevice = " << PortAudioDevice );
@@ -282,44 +272,34 @@ void MythSqueeze::getPortAudioDevice( void )
 
 void MythSqueeze::slotDisablePlayer( void )
 {
-    CreateBusyDialog( "Player Busy . . . Please Wait");
+    DEBUGF("");
 }
 
 void MythSqueeze::slotEnablePlayer( void )
 {
-    if( m_progressDlg != NULL ) {
-        disconnect( slimCLI, SIGNAL(cliInfo(QString)), this, SLOT(slotUpdateProgress(QString)) );
-        m_progressDlg->Close();
-        m_progressDlg = NULL;
-    }
-
-    SendPlayerMessage( "Welcome To MythSqueeze2", "5", true );
+    SendPlayerMessage( "Welcome To MythSqueeze", "5", true );
 }
 
 void MythSqueeze::SqueezePlayerError( void )
 {
     QString errMsg = LOC_ERR + squeezePlayer->readAllStandardError();
     DEBUGF( errMsg );
-    VERBOSE( VB_IMPORTANT, errMsg );
 }
 
 void MythSqueeze::SqueezePlayerOutput( void )
 {
     QString errMsg = LOC + squeezePlayer->readAllStandardOutput();
     DEBUGF( errMsg );
-    VERBOSE( VB_GENERAL, errMsg );
 }
 
 void MythSqueeze::slotSystemInfoMsg( QString msg )
 {
     DEBUGF( msg );
-    VERBOSE( VB_GENERAL, LOC + msg );
 }
 
 void MythSqueeze::slotSystemErrorMsg( QString err )
 {
     DEBUGF( err );
-    VERBOSE( VB_IMPORTANT, LOC_ERR + err );
     Close();    // exit program
 }
 
@@ -327,17 +307,20 @@ bool MythSqueeze::keyPressEvent(QKeyEvent *event)
 {
     bool handled = false;
     QStringList actions;
-    gContext->GetMainWindow()->TranslateKeyPress("MythSB", event, actions);
+
+//    handled = GetMythMainWindow()->TranslateKeyPress("Music", e, actions, true);
+//    gContext->GetMainWindow()->TranslateKeyPress("MythSB", event, actions);
+    handled = GetMythMainWindow()->TranslateKeyPress("MythSB", event, actions );
 
     for (int i = 0; i < actions.size() && !handled; i++)
     {
         QString action = actions[i];
         handled = true;
         DEBUGF( "Button action: " << action );
-        if (action == 	"MENU") { // SWITCHES TO GIVING FULL VFD CONTROL
-            slotPopupStateSection();
-        }
-        else if (action == 	"DOWNARROW")
+        //        if (action == 	"MENU") { // SWITCHES TO GIVING FULL VFD CONTROL
+        //        }
+        //        else if (action == 	"DOWNARROW")
+        if (action == 	"DOWNARROW")
             slotDownArrow();
         else if (action == 	"UPARROW")
             slotUpArrow();

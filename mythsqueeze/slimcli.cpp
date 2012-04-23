@@ -114,6 +114,8 @@ bool SlimCLI::CLIConnectionOpen( void ){
     DEBUGF( "Get Server Info");
     myCliState = SETUP_SERVER;
     emit cliInfo(QString("Gather Server Info"));
+
+    // set up server info before we connect to the "readyRead" signal since we want to use some blocking calls
     if(!serverInfo->Init(this)) {
         cliError(SETUP_DATABASEERROR,QString("Error setting up server info"));
         return false;

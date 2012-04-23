@@ -40,8 +40,8 @@
 #include <mythtv/libmythui/mythuihelper.h>
 #include <mythtv/libmythui/mythprogressdialog.h>
 
-// MythSqueezeBox2 headers
-#include "mythsqueeze.h".h"
+// MythSqueeze headers
+#include "mythsqueeze.h"
 #include "squeezedefines.h"
 #include "squeezesettings.h"
 
@@ -90,7 +90,7 @@ int mythplugin_run(void)
 {
     MythScreenStack *mainStack = GetMythMainWindow()->GetMainStack();
 
-    MythSqueezeBox *mythsqueezebox = new MythSqueezeBox(mainStack, "MythSqueezeBox2");
+    MythSqueeze *mythsqueezebox = new MythSqueeze(mainStack, "MythSqueeze");
 
     if (mythsqueezebox->Create()) {
         mainStack->AddScreen(mythsqueezebox);
@@ -109,7 +109,7 @@ int mythplugin_config(void)
 
 int mythplugin_init(const char *libversion)
 {
-    if (!gContext->TestPopupVersion("MythSqueezeBox2", libversion, MYTH_BINARY_VERSION))
+    if (!gContext->TestPopupVersion("MythSqueeze", libversion, MYTH_BINARY_VERSION))
         return -1;
 
     SqueezeSettings settings;

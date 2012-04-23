@@ -1,11 +1,16 @@
 #include <mythtv/mythcontext.h>
 
 #include "squeezesettings.h"
-#include <qfile.h>
-#include <qdialog.h>
-#include <qcursor.h>
-#include <qdir.h>
-#include <qimage.h>
+#include <QProcess>
+#include <QList>
+#include <QListIterator>
+#include <QByteArray>
+#include <QString>
+#include <QFile>
+#include <QDialog>
+#include <QCursor>
+#include <QDir>
+#include <QImage>
 
 // #include "config.h"
 
@@ -47,29 +52,30 @@ static HostLineEdit *SqueezeCenterCliPassword()
     return gc;
 }
 
-static HostLineEdit *SqueezeCenterCliTimeout()
+static HostComboBox *PortAudioOutputDevice()
 {
-    HostLineEdit *gc = new HostLineEdit("SqueezeCenterCliTimeout");
-    gc->setLabel(QObject::tr("Enter timeout period for CLI requests (in milliseconds)"));
-    gc->setValue("5000");
-    gc->setHelpText(QObject::tr("Number of milliseconds before CLI timeout -- increase if requests are failing"));
-    return gc;
-}
+    // get the list of audio devices available
+    QProcess proc;
+    QStringList args;
+    args.append(QString("-L"));
+    proc.start("squeezeslave", args );
 
-static HostLineEdit *SqueezeCenterCliMaxRequestSize()
-{
-    HostLineEdit *gc = new HostLineEdit("SqueezeCenterCliMaxRequestSize");
-    gc->setLabel(QObject::tr("Enter max number of items for CLI to return for each request"));
-    gc->setValue("20");        // NOTE: QT's QTcpsocket seems to bork on receiving data requests from CLI larger that 16384 bytes.  Requesting about 20 items at a time seems about right.
-    gc->setHelpText(QObject::tr("Maximum number of items requested by CLI in any single request -- may fail if setting is larger than 50"));
-    return gc;
-}
+    proc.waitForReadyRead(2000);
 
-static HostLineEdit *PortAudioOutputDevice()
-{
-    HostLineEdit *gc = new HostLineEdit("PortAudioOutputDevice");
-    gc->setLabel(QObject::tr("Enter Correct Device # for PortAudio To Use (leave blank for 'Default')"));
-    gc->setValue("");        // NOTE: squeezeslave-alse -L will list ports, it would be nice to list port available here
+    QByteArray m_out = proc.readAllStandardOutput();
+    QList<QByteArray> outDevs = m_out.split('\n');
+
+    proc.close();
+
+    HostComboBox *gc = new HostComboBox("PortAudioOutputDevice");
+
+    gc->setLabel(QObject::tr("Select Portaudio Device for output"));
+    gc->addSelection("##DEFAULT AUDIO DEVICE##");       // dummy device for taking the default audio output
+    QListIterator<QByteArray> i(outDevs);
+    while(i.hasNext()) {
+        gc->addSelection(QString(i.next()));
+    }
+
     gc->setHelpText(QObject::tr("The default device for PortAudio is often Pulse audio, which gets turned off by MythTV.  Use 'squeezeslave-alsa -L' at command prompt to see possible devices."));
     return gc;
 }
@@ -77,13 +83,11 @@ static HostLineEdit *PortAudioOutputDevice()
 SqueezeSettings::SqueezeSettings()
 {
     VerticalConfigurationGroup* general = new VerticalConfigurationGroup(false);
-    general->setLabel(QObject::tr("MythSqueezeBox Settings"));
+    general->setLabel(QObject::tr("MythSqueeze Settings"));
     general->addChild(SqueezeCenterIP());
     general->addChild(SqueezeCenterCliPort());
     general->addChild(SqueezeCenterCliUsername());
     general->addChild(SqueezeCenterCliPassword());
-    general->addChild(SqueezeCenterCliTimeout());
-    general->addChild(SqueezeCenterCliMaxRequestSize());
     general->addChild(PortAudioOutputDevice());
     addChild(general);
 }

@@ -33,7 +33,7 @@ MythSqueezeDisplay::MythSqueezeDisplay( MythUIVideo *squeezeDisplay, QObject *pa
     line1fm=NULL;
     displayImage=NULL;
     m_squeezeDisplay = squeezeDisplay;
-    displayLabel=m_squeezeDisplay->GetArea().toQRect();
+    displayLabel = m_squeezeDisplay->GetArea().toQRect();
 }
 
 MythSqueezeDisplay::~MythSqueezeDisplay(void)
@@ -81,8 +81,8 @@ void MythSqueezeDisplay::resetDimensions(void)
     // first establish display parameters for entire display area
     // Leave a blank area all around
 
-    int drawwidth = displayLabel->width()-2*WPADDING;
-    int drawheight = displayLabel->height()-2*HPADDING;
+    int drawwidth = displayLabel.width()-2*WPADDING;
+    int drawheight = displayLabel.height()-2*HPADDING;
 
     // we want a ratio of at least a 1 X 10 for the display
     if(drawwidth/drawheight >= 10) {  // too wide
@@ -100,7 +100,7 @@ void MythSqueezeDisplay::resetDimensions(void)
 
     // let's make sure we're not too small, and if we are, artificially enlarge the size
     if(m_displayRect.height() < 32) {   // probably too small to use, so for a size of 320x32
-        DEBUGF(QString("original display rectangle is too small, with height of %1, main rect is %2 high").arg(m_displayRect.height()).arg(displayLabel->height()));
+        DEBUGF(QString("original display rectangle is too small, with height of %1, main rect is %2 high").arg(m_displayRect.height()).arg(displayLabel.height()));
         m_displayRect.setHeight(32);
         m_displayRect.setWidth(320);
     }
@@ -125,7 +125,7 @@ void MythSqueezeDisplay::resetDimensions(void)
     for( int i = 5; QFontInfo(small).pixelSize() < line0Bounds.height(); i++)
         small.setPixelSize(i);
 
-    for(int i=5; QFontInfo(medium).pixelSize() < displayLabel->height()/3; i++)
+    for(int i=5; QFontInfo(medium).pixelSize() < displayLabel.height()/3; i++)
         medium.setPixelSize(i);
 
     for(int i = 5; QFontInfo(large).pixelSize() < line1Bounds.height(); i++)
@@ -146,7 +146,7 @@ void MythSqueezeDisplay::resetDimensions(void)
     bumpTransTimer->setFrameRange( 0, Line1FontWidth );
 
     // establish volume and time progress bars
-    volFillRect = volRect = QRect( m_displayRect.x(), displayLabel->height()/2 - line0Bounds.height()/2, m_displayRect.width()-(2*WPADDING),line0Bounds.height());
+    volFillRect = volRect = QRect( m_displayRect.x(), displayLabel.height()/2 - line0Bounds.height()/2, m_displayRect.width()-(2*WPADDING),line0Bounds.height());
     progFillRect = progRect = QRect(0,line0Bounds.top()+ line0Bounds.height()/4,line0Bounds.width(),line0Bounds.height()/2);    // note, "left" and "width" are irrelevant here, only "top" and "height" will remain constant
     radius = volRect.height()/4;
 
@@ -154,7 +154,7 @@ void MythSqueezeDisplay::resetDimensions(void)
     if(displayImage) {
         delete displayImage;
     }
-    displayImage = new QImage(displayLabel->width(),displayLabel->height(),QImage::Format_ARGB32 );
+    displayImage = new QImage(displayLabel.width(),displayLabel.height(),QImage::Format_ARGB32 );
     displayImage->fill((uint)m_displayBackgroundColor.rgb());
     DEBUGF("Display Image Dimensions" << displayImage->rect());
 }
@@ -185,7 +185,7 @@ void MythSqueezeDisplay::slotUpdateSlimDisplay( void )
     lineWidth = line1fm->width( activeDevice->getDisplayBuffer()->line1 );
 
     // set the point at which we draw the second iteration of line1 text
-    pointLine1_2 = QPoint( lineWidth + ( displayLabel->width() - line1Bounds.width()) + (Line1FontWidth*2), line1Bounds.bottom() );
+    pointLine1_2 = QPoint( lineWidth + ( displayLabel.width() - line1Bounds.width()) + (Line1FontWidth*2), line1Bounds.bottom() );
 
     if(  lineWidth > line1Bounds.width() ) {
         if( scrollState == NOSCROLL ) {
@@ -531,7 +531,8 @@ void MythSqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
             QPoint start = QPoint( center1Bounds.x() + (center1Bounds.width()/2)- ( fm.width( buf->center1 )/2 ), center1Bounds.bottom() );
             p.drawText( start, buf->center1 );
         }
-//    displayLabel->setPixmap(QPixmap::fromImage( *displayImage) );
-        m_squeezeDisplay->UpdateFrame(QPixmap::fromImage(*displayImage));
+//    displayLabel.setPixmap(QPixmap::fromImage( *displayImage) );
+        QPixmap pix = QPixmap::fromImage(*displayImage);
+        m_squeezeDisplay->UpdateFrame(&pix);
 }
 

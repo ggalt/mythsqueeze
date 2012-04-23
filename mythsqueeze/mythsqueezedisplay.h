@@ -83,7 +83,7 @@ private:
 
     // for display of the slim device interface
     MythUIVideo *m_squeezeDisplay;
-    QRect *displayLabel;
+    QRect displayLabel;
     QImage *displayImage;  // use a QImage not a QPixmap so we can use alpha blends
     QPixmap pic;            // pixmap for use by MythUIVideo
     SlimDevice *activeDevice;   // reference to active device, must be set manually

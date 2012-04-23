@@ -4,7 +4,6 @@
 #include "slimserverinfo.h"
 #include "slimcli.h"
 #include "slimdevice.h"
-#include "slimdatabasefetch.h"
 
 #ifdef SLIMSERVERINFO_DEBUG
 #define DEBUGF(...) qDebug() << this->objectName() << Q_FUNC_INFO << __VA_ARGS__;

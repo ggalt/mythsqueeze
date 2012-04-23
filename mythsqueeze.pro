@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
 # Directories
-SUBDIRS = mythsqueeze theme squeezeslave
+SUBDIRS = mythsqueeze theme
 #SUBDIRS = mythsqueezebox2 theme
 
