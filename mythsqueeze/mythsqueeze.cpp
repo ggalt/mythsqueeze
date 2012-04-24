@@ -18,8 +18,12 @@ MythSqueeze::MythSqueeze(MythScreenStack *parent, const char *name)
     slimCLI = new SlimCLI( this );
     serverInfo = new SlimServerInfo(this);
 
+    SlimServerAudioPort="3483";  // address for audio connection, default 3483
+    SlimServerCLIPort="9090";    // address for CLI interfact, default 9090
+    SlimServerHttpPort="9000";       // address for http connection, default 9000
+    PortAudioDevice="";    // device to use for PortAudio -- leave blank for default device
+
     activeDevice = NULL;
-    PortAudioDevice = "";
     isStartUp = true;
 
     activeDevice = NULL;
@@ -33,6 +37,8 @@ MythSqueeze::MythSqueeze(MythScreenStack *parent, const char *name)
 MythSqueeze::~MythSqueeze()
 {
     DEBUGF( "Exiting MythSqueeze Plugin at " + QDateTime::currentDateTime().toString() );
+    serverInfo->deleteLater();
+    slimCLI->deleteLater();
     squeezePlayer->close();
 }
 
@@ -47,7 +53,7 @@ bool MythSqueeze::Create()
     bool foundtheme = false;
 
     // Load the theme for this screen
-    foundtheme = LoadWindowFromXML("MythSqueeze-ui.xml", "MythSqueeze", this);
+    foundtheme = LoadWindowFromXML("mythsqueeze-ui.xml", "MythSqueeze", this);
 
     if (!foundtheme) {
         DEBUGF("no theme" );

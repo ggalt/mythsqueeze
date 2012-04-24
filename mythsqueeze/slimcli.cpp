@@ -251,6 +251,7 @@ bool SlimCLI::msgWaiting( void )
     while( slimCliSocket->bytesAvailable() && t.elapsed() < iTimeOut ) {  // we need to loop because we often get new messages while processing old and "readyread" misses them -- better to move socket to its own thread, but this works for now
         while( !slimCliSocket->canReadLine () ) { // wait for a full line of content  NOTE: protect against unlikely infinite loop with timer
             if( t.elapsed() > iTimeOut ) {
+                DEBUGF("Error: timed out waiting for a full line from server");
                 // VERBOSE( VB_IMPORTANT, "Error: timed out waiting for a full line from server" );
                 return false;
             }
