@@ -365,9 +365,11 @@ bool MythSqueezeDisplay::Slimp3Display( QString txt )
 
 void MythSqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
 {
+    DEBUGF("Colors" << m_displayBackgroundColor << m_textcolorGeneral );
     int playedCount = 0;
     int totalCount = 1; // this way we never get a divide by zero error
     QString timeText = "";
+
 
     QPainter p( displayImage );
     QBrush b( m_displayBackgroundColor );
@@ -382,6 +384,8 @@ void MythSqueezeDisplay::PaintSqueezeDisplay(DisplayBuffer *buf)
     p.setPen( m_textcolorGeneral );
     p.setFont( large );
     p.eraseRect( displayImage->rect() );
+
+    DEBUGF("LINE 0: " << line0Bounds << " LINE 1:" << line1Bounds);
 
     // draw Line 0  NOTE: Only transitions left or right, but NOT up and down
     if( buf->line0.length() > 0 ) {

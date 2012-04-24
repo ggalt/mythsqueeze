@@ -139,7 +139,7 @@ void MythSqueeze::InitPlayer(void)
     connect( slimCLI, SIGNAL(cliInfo(QString)),
              this, SLOT(slotSystemInfoMsg(QString)) );
 
-    m_disp->Init(); // set up display
+    m_disp->Init(Qt::cyan, Qt::black); // set up display
 
     slimCLI->SetServerInfo(serverInfo);                         // give pointer so CLI can get server info and put into SlimServerInfo
     slimCLI->Init();
