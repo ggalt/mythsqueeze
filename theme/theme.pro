@@ -9,16 +9,16 @@ CONFIG -= qt moc
 
 !macx:QMAKE_COPY_DIR = sh ../../cpsvndir
 
-defaultfiles.path = $${PREFIX}/share/mythtv/themes/default
-defaultfiles.files = default/*.xml
+#defaultfiles.path = $${PREFIX}/share/mythtv/themes/default
+#defaultfiles.files = default/*.xml
 
 widefiles.path = $${PREFIX}/share/mythtv/themes/default-wide
 widefiles.files = default-wide/*.xml
 
-menufiles.path = $${PREFIX}/share/mythtv/
-menufiles.files = menus/*.xml
+#menufiles.path = $${PREFIX}/share/mythtv/
+#menufiles.files = menus/*.xml
 
-INSTALLS += defaultfiles widefiles menufiles
+INSTALLS += widefiles 
 
 # Input
 SOURCES += ../../themedummy.c
