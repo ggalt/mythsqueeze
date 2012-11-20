@@ -7,7 +7,8 @@ This plugin is a very stripped down version of the prior mythsqueezebox plugin.
 It's only function is to start the squeezeslave client using parameters set
 through MythTV's settings function, and connect to the Logitech Media Server
 (formerly Squeezebox Server) via the CLI (on port 9090) to control the
-squeezeslave client and to receive messages to display.
+squeezeslave client and to receive messages to display.  Please take a 
+look at video located here: http://www.youtube.com/watch?v=--x2amE0Qzk
 
 You will need to have a suitable mythtv development environment.  For me, using
 Fedora 16 (x86_64) with the atrpms (www.atrpms.net) I added the mythtv-devel
